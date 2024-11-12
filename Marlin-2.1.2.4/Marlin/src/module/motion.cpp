@@ -1964,9 +1964,11 @@ void prepare_line_to_destination() {
 
   void homeaxis(const AxisEnum axis) {
 
-    #if ANY(MORGAN_SCARA, MP_SCARA, PARALLEL_SCARA)
+    #if ANY(MORGAN_SCARA, MP_SCARA)
       // Only Z homing (with probe) is permitted
       if (axis != Z_AXIS) { BUZZ(100, 880); return; }
+    #elif ENABLED(PARALLEL_SCARA)
+      if (axis != A_AXIS && axis != B_AXIS && axis != Z_AXIS) { BUZZ(100, 880); return; }
     #else
       #define _CAN_HOME(A) (axis == _AXIS(A) && ( \
            ENABLED(A##_SPI_SENSORLESS) \

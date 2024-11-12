@@ -184,7 +184,6 @@ float segments_per_second = DEFAULT_SEGMENTS_PER_SECOND;
     if (axis == Z_AXIS)
       current_position.z = Z_HOME_POS;
     else {
-      // MORGAN_SCARA uses a Cartesian XY home position
       xyz_pos_t homeposition = { X_HOME_POS, Y_HOME_POS, Z_HOME_POS };
       //DEBUG_ECHOLNPGM_P(PSTR("homeposition X"), homeposition.x, SP_Y_LBL, homeposition.y);
 

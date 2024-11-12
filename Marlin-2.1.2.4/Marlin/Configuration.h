@@ -1027,8 +1027,8 @@
 
     #define SCARA_OFFSET_C 44 // 두 모터축 사이의 거리
     
-    //#define SCARA_OFFSET_THETA1 12 // degrees, 엔드스톱 위치에서의 모터1 오프셋
-    //#define SCARA_OFFSET_THETA2 131 // degrees, 엔드스톱 위치에서의 모터2 오프셋
+    //#define SCARA_OFFSET_THETA1 12 // degrees, 엔드스톱 위치에서의 모터1 오프셋 -> 이거 사용해야 될듯!!
+    //#define SCARA_OFFSET_THETA2 131 // degrees, 엔드스톱 위치에서의 모터2 오프셋 -> 이거 사용해야 될듯!!
 
   #endif
 
@@ -2123,8 +2123,8 @@
 
 // Manually set the home position. Leave these undefined for automatic settings.
 // For DELTA this is the top-center of the Cartesian print volume.
-#define MANUAL_X_HOME_POS 0 //SCARA_OFFSET_X + SCARA_OFFSET_C/2
-#define MANUAL_Y_HOME_POS 0 //SCARA_OFFSET_Y + 200.84
+#define MANUAL_X_HOME_POS 0 
+#define MANUAL_Y_HOME_POS 0 
 #define MANUAL_Z_HOME_POS 0
 //#define MANUAL_I_HOME_POS 0
 //#define MANUAL_J_HOME_POS 0
