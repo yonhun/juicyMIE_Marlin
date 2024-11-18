@@ -5,8 +5,12 @@
 #define Y_STEP_PIN      60
 #define Y_DIR_PIN       61
 #define Y_ENABLE_PIN    56
+#define Z_STEP_PIN      46
+#define Z_DIR_PIN       48
+#define Z_ENABLE_PIN    62
 #define X_MIN_PIN       3   // X min 엔드스탑 핀
 #define Y_MAX_PIN       15  // Y max 엔드스탑 핀
+#define Z_MIN_PIN       18  // Z min 엔드스탑 핀
 
 void setup() {
   Serial.begin(115200); // 시리얼 모니터 초기화
@@ -20,13 +24,19 @@ void setup() {
   pinMode(Y_DIR_PIN, OUTPUT);
   pinMode(Y_ENABLE_PIN, OUTPUT);
 
+  pinMode(Z_STEP_PIN, OUTPUT);
+  pinMode(Z_DIR_PIN, OUTPUT);
+  pinMode(Z_ENABLE_PIN, OUTPUT);
+
   // 엔드스탑 핀 초기화
   pinMode(X_MIN_PIN, INPUT_PULLUP);
   pinMode(Y_MAX_PIN, INPUT_PULLUP);
+  pinMode(Z_MIN_PIN, INPUT_PULLUP);
 
   // 모터 활성화 (활성화 상태는 LOW)
   digitalWrite(X_ENABLE_PIN, HIGH);
   digitalWrite(Y_ENABLE_PIN, HIGH);
+  digitalWrite(Z_ENABLE_PIN, HIGH);
 
   // 초기 지연 시간
   delay(1000);
@@ -80,7 +90,22 @@ void loop() {
   Serial.println("Y MAX endstop triggered. Stopping Y axis motor...");
   delay(1000);
 
-  // 모든 동작 완료 후 다음 단계를 Signal하기 위해 시리얼로 메시지 전송
+  // 3. Z축 호밍
+  Serial.println("Moving Z axis clockwise until Z MIN endstop is triggered...");
+  digitalWrite(Z_ENABLE_PIN, LOW);
+  digitalWrite(Z_DIR_PIN, HIGH); // Z축 시계 방향 설정 (플랫폼 하강)
+
+  while (digitalRead(Z_MIN_PIN) == HIGH) { // 엔드스탑이 눌리면 LOW
+    digitalWrite(Z_STEP_PIN, HIGH);
+    delayMicroseconds(500);
+    digitalWrite(Z_STEP_PIN, LOW);
+    delayMicroseconds(500);
+  }
+
+  Serial.println("Z MIN endstop triggered. Stopping Z axis motor...");
+  delay(1000);
+
+  // 모든 동작 완료 후 메시지 전송
   Serial.println("Homing process completed.");
 
   // 무한 대기하여 반복되지 않도록 함
