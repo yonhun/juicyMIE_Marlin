@@ -35,10 +35,6 @@
 #if ENABLED(AXEL_TPARA)
   #include "endstops.h"
   #include "../MarlinCore.h"
-
-#elif ENABLED(PARALLEL_SCARA)
-  #include "endstops.h"
-
 #endif
 
 float segments_per_second = DEFAULT_SEGMENTS_PER_SECOND;
