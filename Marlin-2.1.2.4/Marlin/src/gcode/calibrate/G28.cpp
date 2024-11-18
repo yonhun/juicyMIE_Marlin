@@ -370,6 +370,14 @@ void GcodeSuite::G28() {
 
     home_TPARA();
 
+  #elif ENABLED(PARALLEL_SCARA)
+
+    constexpr bool doZ = true;
+
+    homeaxis(Z_AXIS);
+    homeaxis(X_AXIS);
+    homeaxis(Y_AXIS);
+    
   #else
 
     #define _UNSAFE(A) (homeZ && TERN0(Z_SAFE_HOMING, axes_should_home(_BV(A##_AXIS))))

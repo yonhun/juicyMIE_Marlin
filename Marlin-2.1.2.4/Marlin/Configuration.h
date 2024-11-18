@@ -691,9 +691,9 @@
     #define DEFAULT_Ki_LIST {   1.08,   1.08 }
     #define DEFAULT_Kd_LIST { 114.00, 114.00 }
   #else
-    #define DEFAULT_Kp  22.20
-    #define DEFAULT_Ki   1.08
-    #define DEFAULT_Kd 114.00
+    #define DEFAULT_Kp  30.00
+    #define DEFAULT_Ki   3.03
+    #define DEFAULT_Kd  74.50
   #endif
 #else
   #define BANG_MAX 255    // Limit hotend current while in bang-bang mode; 255=full current
@@ -780,9 +780,9 @@
 
   // 120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-  #define DEFAULT_bedKp 10.00
-  #define DEFAULT_bedKi .023
-  #define DEFAULT_bedKd 305.4
+  #define DEFAULT_bedKp 132.4
+  #define DEFAULT_bedKi 26.06
+  #define DEFAULT_bedKd 448.1
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #else
@@ -1026,9 +1026,6 @@
     #define SCARA_FEEDRATE_SCALING // 끝단의 실제 이동 속도가 일정하도록 보정
 
     #define SCARA_OFFSET_C 44 // 두 모터축 사이의 거리
-    
-    //#define SCARA_OFFSET_THETA1 12 // degrees, 엔드스톱 위치에서의 모터1 오프셋 -> 이거 사용해야 될듯!!
-    //#define SCARA_OFFSET_THETA2 131 // degrees, 엔드스톱 위치에서의 모터2 오프셋 -> 이거 사용해야 될듯!!
 
   #endif
 
@@ -1080,7 +1077,7 @@
 // Specify here all the endstop connectors that are connected to any endstop or probe.
 // Almost all printers will be using one per axis. Probes will use one or more of the
 // extra connectors. Leave undefined any used for non-endstop and non-probe purposes.
-//#define USE_XMIN_PLUG // 모터1은 각도가 최소일 때 엔드스탑 스위치 contact
+#define USE_XMIN_PLUG // 모터1은 각도가 최소일 때 엔드스탑 스위치 contact
 //#define USE_YMIN_PLUG
 #define USE_ZMIN_PLUG // Z-axis 모터는 최소일 때 엔드스탑 스위치 contact
 //#define USE_IMIN_PLUG
@@ -1090,7 +1087,7 @@
 //#define USE_VMIN_PLUG
 //#define USE_WMIN_PLUG
 //#define USE_XMAX_PLUG
-//#define USE_YMAX_PLUG // 모터2는 각도가 최대일 때 엔드스탑 스위치 contact
+#define USE_YMAX_PLUG // 모터2는 각도가 최대일 때 엔드스탑 스위치 contact
 //#define USE_ZMAX_PLUG
 //#define USE_IMAX_PLUG
 //#define USE_JMAX_PLUG
@@ -1692,7 +1689,7 @@
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
 #define INVERT_X_DIR false
 #define INVERT_Y_DIR false
-#define INVERT_Z_DIR false
+#define INVERT_Z_DIR true
 //#define INVERT_I_DIR false
 //#define INVERT_J_DIR false
 //#define INVERT_K_DIR false
@@ -1731,7 +1728,7 @@
 
 // Direction of endstops when homing; 1=MAX, -1=MIN
 // :[-1,1]
-#define X_HOME_DIR 1
+#define X_HOME_DIR -1
 #define Y_HOME_DIR 1
 #define Z_HOME_DIR -1
 //#define I_HOME_DIR -1
@@ -1748,12 +1745,12 @@
 #define Y_BED_SIZE 150
 
 // Travel limits (linear=mm, rotational=°) after homing, corresponding to endstop positions.
-#define X_MIN_POS 0
-#define X_MAX_POS 150
-#define Y_MIN_POS 0
-#define Y_MAX_POS 150
+#define X_MIN_POS -80
+#define X_MAX_POS 200
+#define Y_MIN_POS -10
+#define Y_MAX_POS 170
 #define Z_MIN_POS 0
-#define Z_MAX_POS 200
+#define Z_MAX_POS 210
 //#define I_MIN_POS 0
 //#define I_MAX_POS 50
 //#define J_MIN_POS 0
@@ -2123,9 +2120,9 @@
 
 // Manually set the home position. Leave these undefined for automatic settings.
 // For DELTA this is the top-center of the Cartesian print volume.
-#define MANUAL_X_HOME_POS 0 
-#define MANUAL_Y_HOME_POS 0 
-#define MANUAL_Z_HOME_POS 0
+#define MANUAL_X_HOME_POS -68.04 
+#define MANUAL_Y_HOME_POS 75.15
+#define MANUAL_Z_HOME_POS 0.5
 //#define MANUAL_I_HOME_POS 0
 //#define MANUAL_J_HOME_POS 0
 //#define MANUAL_K_HOME_POS 0

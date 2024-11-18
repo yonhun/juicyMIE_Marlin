@@ -35,6 +35,10 @@
 #if ENABLED(AXEL_TPARA)
   #include "endstops.h"
   #include "../MarlinCore.h"
+
+#elif ENABLED(PARALLEL_SCARA)
+  #include "endstops.h"
+
 #endif
 
 float segments_per_second = DEFAULT_SEGMENTS_PER_SECOND;
@@ -185,13 +189,10 @@ float segments_per_second = DEFAULT_SEGMENTS_PER_SECOND;
       current_position.z = Z_HOME_POS;
     else {
       xyz_pos_t homeposition = { X_HOME_POS, Y_HOME_POS, Z_HOME_POS };
-      //DEBUG_ECHOLNPGM_P(PSTR("homeposition X"), homeposition.x, SP_Y_LBL, homeposition.y);
-
       inverse_kinematics(homeposition);
       forward_kinematics(delta.a, delta.b);
       current_position[axis] = cartes[axis];
 
-      //DEBUG_ECHOLNPGM_P(PSTR("Cartesian X"), current_position.x, SP_Y_LBL, current_position.y);
       update_software_endstops(axis);
     }
   }  
