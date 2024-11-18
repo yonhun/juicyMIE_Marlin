@@ -211,8 +211,8 @@ void menu_move() {
   #endif
 
   // Move submenu for each axis
-  //if (IS_KINEMATIC) { // 밑 부분 주석처리 & 이 부분 주석처리 해제 시 호밍 없이 move 가능
-  if (NONE(IS_KINEMATIC, NO_MOTION_BEFORE_HOMING) || all_axes_homed()) {
+  if (IS_KINEMATIC) { // 밑 부분 주석처리 & 이 부분 주석처리 해제 시 호밍 없이 move 가능
+  //if (NONE(IS_KINEMATIC, NO_MOTION_BEFORE_HOMING) || all_axes_homed()) {
     if (TERN1(DELTA, current_position.z <= delta_clip_start_height)) {
       SUBMENU_N(X_AXIS, MSG_MOVE_N, []{ _menu_move_distance(X_AXIS, []{ lcd_move_axis(X_AXIS); }); });
       #if HAS_Y_AXIS

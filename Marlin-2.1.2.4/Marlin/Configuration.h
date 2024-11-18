@@ -1002,8 +1002,8 @@
 
   // SCARA tower offset (position of Tower relative to bed zero position)
   // This needs to be reasonably accurate as it defines the printbed position in the SCARA space.
-  #define SCARA_OFFSET_X  53.2       // (mm) // PARALLEL_SCARA에서는 모터 1(좌측 모터)의 X 오프셋(기준은 프린트베드의 위치)
-  #define SCARA_OFFSET_Y  -33.45       // (mm) // PARALLEL_SCARA에서는 모터 1(좌측 모터)의 Y 오프셋(기준은 프린트베드의 위치)
+  #define SCARA_OFFSET_X  38.2       // (mm) // PARALLEL_SCARA에서는 모터 1(좌측 모터)의 X 오프셋(기준은 프린트베드의 위치)
+  #define SCARA_OFFSET_Y  -48.45       // (mm) // PARALLEL_SCARA에서는 모터 1(좌측 모터)의 Y 오프셋(기준은 프린트베드의 위치)
 
   #if ENABLED(MORGAN_SCARA)
 
@@ -1213,7 +1213,7 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 400/9, 400/9, 200, 500 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 400/9, 400/9, 200, 200 }
 
 /**
  * Default Max Feed Rate (linear=mm/s, rotational=°/s)
@@ -2120,8 +2120,8 @@
 
 // Manually set the home position. Leave these undefined for automatic settings.
 // For DELTA this is the top-center of the Cartesian print volume.
-#define MANUAL_X_HOME_POS -68.04 
-#define MANUAL_Y_HOME_POS 75.15
+#define MANUAL_X_HOME_POS -83.04 
+#define MANUAL_Y_HOME_POS 60.15
 #define MANUAL_Z_HOME_POS 0.5
 //#define MANUAL_I_HOME_POS 0
 //#define MANUAL_J_HOME_POS 0

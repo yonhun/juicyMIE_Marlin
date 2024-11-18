@@ -181,17 +181,28 @@ float segments_per_second = DEFAULT_SEGMENTS_PER_SECOND;
   static constexpr float SCARA_OFFSET = SCARA_OFFSET_C;  // 두 암 사이의 오프셋
 
   void scara_set_axis_is_at_home(const AxisEnum axis) {
-    if (axis == Z_AXIS)
-      current_position.z = Z_HOME_POS;
-    else {
-      xyz_pos_t homeposition = { X_HOME_POS, Y_HOME_POS, Z_HOME_POS };
-      inverse_kinematics(homeposition);
-      forward_kinematics(delta.a, delta.b);
-      current_position[axis] = cartes[axis];
+  if (axis == Z_AXIS) {
+    current_position.z = Z_HOME_POS; // Z축 호밍
+  } 
+  else if (axis == X_AXIS) {
+    // X축에 대해 처리
+    xyz_pos_t homeposition = { X_HOME_POS, current_position.y, current_position.z };
+    inverse_kinematics(homeposition);
+    forward_kinematics(delta.a, delta.b);
+    current_position.x = cartes.x;
+  } 
+  else if (axis == Y_AXIS) {
+    // Y축에 대해 처리
+    xyz_pos_t homeposition = { current_position.x, Y_HOME_POS, current_position.z };
+    inverse_kinematics(homeposition);
+    forward_kinematics(delta.a, delta.b);
+    current_position.y = cartes.y;
+  }
 
-      update_software_endstops(axis);
-    }
-  }  
+  // 소프트웨어 엔드스톱 업데이트
+  update_software_endstops(axis);
+}
+
 
   // PARALLEL_SCARA Forward Kinematics
   void forward_kinematics(const_float_t a, const_float_t b) {

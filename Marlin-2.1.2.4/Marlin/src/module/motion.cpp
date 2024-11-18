@@ -1968,12 +1968,12 @@ void prepare_line_to_destination() {
       // Only Z homing (with probe) is permitted
       if (axis != Z_AXIS) { BUZZ(100, 880); return; }
     #elif ENABLED(PARALLEL_SCARA)
-      if (axis == X_AXIS || axis == Y_AXIS) {
+      if (axis == X_AXIS || axis == Y_AXIS || axis == Z_AXIS) {
         set_axis_is_at_home(axis);
         sync_plan_position();
         return;
       }
-      else if (axis != Z_AXIS) {
+      else  {
         BUZZ(100, 880);
         return;
       }
