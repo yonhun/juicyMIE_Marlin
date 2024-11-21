@@ -374,7 +374,9 @@ void GcodeSuite::G28() {
 
     constexpr bool doZ = true;
     
-    home_PARALLEL_SCARA();
+    //home_PARALLEL_SCARA();
+    //home_PARALLEL_SCARA2();
+    home_PARALLEL_SCARA3();
     
   #else
 
