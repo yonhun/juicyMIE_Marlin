@@ -32,7 +32,7 @@
 #include "motion.h"
 #include "planner.h"
 
-#if ENABLED(AXEL_TPARA)
+#if ANY(PARALLEL_SCARA, AXEL_TPARA)
   #include "endstops.h"
   #include "../MarlinCore.h"
 #endif
@@ -179,6 +179,85 @@ float segments_per_second = DEFAULT_SEGMENTS_PER_SECOND;
 
   static constexpr xy_pos_t scara_offset = { SCARA_OFFSET_X, SCARA_OFFSET_Y };
   static constexpr float SCARA_OFFSET = SCARA_OFFSET_C;  // 두 암 사이의 오프셋
+
+  void home_PARALLEL_SCARA() {
+
+    // 호밍 시작(엔드스톱 활성화)
+    SERIAL_ECHOLNPGM("PARALLEL_SCARA HOMING START");
+    endstops.enable(true);  
+
+    // 현재 위치 초기화
+    SERIAL_ECHOLNPGM("RESET CURRENT POSITION");
+    current_position.reset();
+    destination.reset();
+    sync_plan_position();
+
+    // 현재 위치 임의 설정
+    SERIAL_ECHOLNPGM("SET CURRENT POSITION");
+    current_position.set(scara_offset.x + SCARA_OFFSET/2, 0, 0);
+    inverse_kinematics(current_position);
+    forward_kinematics(delta.a, delta.b);
+    sync_plan_position();
+
+    // X축 호밍
+    SERIAL_ECHOLNPGM("HOMING X AXIS");
+    delta.set(0, delta.b);
+    forward_kinematics(delta.a, delta.b);
+    destination.x = cartes.x;
+    destination.y = cartes.y;
+    destination.z = current_position.z;
+    prepare_line_to_destination();
+    // 엔드스톱 닿으면 현재 X 위치 저장
+    if (endstops.trigger_state()) {
+      SERIAL_ECHOLNPGM("HIT X ENDSTOP");
+      set_axis_is_at_home(X_AXIS);
+      sync_plan_position();
+      endstops.hit_on_purpose();
+    }
+
+    // X축, Y축 안전 위치 이동
+    SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION");
+    delta.set(180, 45);
+    forward_kinematics(delta.a, delta.b);
+    prepare_line_to_destination();
+    planner.synchronize();
+    sync_plan_position();
+
+    // Y축 호밍
+    SERIAL_ECHOLNPGM("HOMING Y AXIS");
+    delta.set(180, 150);
+    forward_kinematics(delta.a, delta.b);
+    destination.x = cartes.x;
+    destination.y = cartes.y;
+    destination.z = current_position.z;
+    prepare_line_to_destination();
+    if (endstops.trigger_state())
+    {
+      SERIAL_ECHOLNPGM("HIT Y ENDSTOP");
+      set_axis_is_at_home(Y_AXIS);
+      sync_plan_position();
+      endstops.hit_on_purpose();
+    }
+
+    // Z축 호밍
+    SERIAL_ECHOLNPGM("HOMING Z AXIS");
+    homeaxis(Z_AXIS);
+
+    // 호밍 완료
+    endstops.enable(false);
+    sync_plan_position();
+    SERIAL_ECHOLNPGM("PARALLEL_SCARA HOMING COMPLETE");
+
+    // 0,0 위치로 이동
+    SERIAL_ECHOLNPGM("MOVE TO 0,0");
+    destination.x = 0;
+    destination.y = 0;  
+    destination.z = current_position.z;
+    prepare_line_to_destination();
+    planner.synchronize();
+    sync_plan_position();
+    SERIAL_ECHOLNPGM("PARALLEL_SCARA MOVE TO 0,0 COMPLETE");
+  }
 
   void scara_set_axis_is_at_home(const AxisEnum axis) {
   if (axis == Z_AXIS) {

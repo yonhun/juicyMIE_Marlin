@@ -374,9 +374,7 @@ void GcodeSuite::G28() {
 
     constexpr bool doZ = true;
     
-    homeaxis(X_AXIS);
-    homeaxis(Y_AXIS);
-    homeaxis(Z_AXIS);
+    home_PARALLEL_SCARA();
     
   #else
 
