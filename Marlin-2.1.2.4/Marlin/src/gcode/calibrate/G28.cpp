@@ -378,7 +378,6 @@ void GcodeSuite::G28() {
     homeaxis(Y_AXIS);
     homeaxis(Z_AXIS);
     
-    
   #else
 
     #define _UNSAFE(A) (homeZ && TERN0(Z_SAFE_HOMING, axes_should_home(_BV(A##_AXIS))))
@@ -626,24 +625,13 @@ void GcodeSuite::G28() {
   TERN_(HAS_DWIN_E3V2_BASIC, DWIN_HomingDone());
   TERN_(EXTENSIBLE_UI, ExtUI::onHomingDone());
 
-    report_current_position();
-
-  // Add custom offsets after homing
-  current_position[X_AXIS] = -68.0;  // Set X-axis home position to -68
-  current_position[Y_AXIS] = 75.0;   // Set Y-axis home position to 75
-  current_position[Z_AXIS] = 0.5;    // Set Z-axis home position to 0.5
-
-  // Sync planner with the updated positions
-  sync_plan_position();
+  report_current_position();
 
   TERN_(HAS_DWIN_E3V2_BASIC, DWIN_HomingDone());
   TERN_(EXTENSIBLE_UI, ExtUI::onHomingDone());
-
-  report_current_position();
 
   if (ENABLED(NANODLP_Z_SYNC) && (doZ || ENABLED(NANODLP_ALL_AXIS)))
     SERIAL_ECHOLNPGM(STR_Z_MOVE_COMP);
 
   TERN_(FULL_REPORT_TO_HOST_FEATURE, set_and_report_grblstate(old_grblstate));
 }
-
