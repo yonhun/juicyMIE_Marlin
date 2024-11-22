@@ -44,12 +44,10 @@ extern float segments_per_second;
                   L1_2 = sq(float(L1)), L1_2_2 = 2.0 * L1_2,
                   L2_2 = sq(float(L2));
 
+  void home_PARALLEL_SCARA();
   void forward_kinematics(const_float_t a, const_float_t b);
   xy_pos_t forward_kinematics_for_home(const_float_t a, const_float_t b);
   xy_pos_t inverse_kinematics_for_home(const xyz_pos_t &raw);
-  void home_PARALLEL_SCARA();
-  void home_PARALLEL_SCARA2();
-  void home_PARALLEL_SCARA3();
 
 #else
 

@@ -373,10 +373,8 @@ void GcodeSuite::G28() {
   #elif ENABLED(PARALLEL_SCARA)
 
     constexpr bool doZ = true;
-    
-    //home_PARALLEL_SCARA();
-    //home_PARALLEL_SCARA2();
-    home_PARALLEL_SCARA3();
+
+    home_PARALLEL_SCARA();
     
   #else
 
