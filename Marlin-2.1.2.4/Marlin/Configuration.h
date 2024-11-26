@@ -1003,8 +1003,8 @@
 
   // SCARA tower offset (position of Tower relative to bed zero position)
   // This needs to be reasonably accurate as it defines the printbed position in the SCARA space.
-  #define SCARA_OFFSET_X  38.2       // (mm) // PARALLEL_SCARA에서는 모터 1(좌측 모터)의 X 오프셋(기준은 프린트베드의 위치)
-  #define SCARA_OFFSET_Y  -48.45       // (mm) // PARALLEL_SCARA에서는 모터 1(좌측 모터)의 Y 오프셋(기준은 프린트베드의 위치)
+  #define SCARA_OFFSET_X  38        // (mm) // PARALLEL_SCARA에서는 모터 1(좌측 모터)의 X 오프셋(기준은 프린트베드의 위치)
+  #define SCARA_OFFSET_Y  -48.45    // (mm) // PARALLEL_SCARA에서는 모터 1(좌측 모터)의 Y 오프셋(기준은 프린트베드의 위치)
 
   #if ENABLED(MORGAN_SCARA)
 
@@ -1214,14 +1214,14 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 800/9, 800/9, 400, 300 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 800/9, 800/9, 400, 92.6 }
 
 /**
  * Default Max Feed Rate (linear=mm/s, rotational=°/s)
  * Override with M203
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
+#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 50 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -1748,7 +1748,7 @@
 // Travel limits (linear=mm, rotational=°) after homing, corresponding to endstop positions.
 #define X_MIN_POS -90
 #define X_MAX_POS 210
-#define Y_MIN_POS -10
+#define Y_MIN_POS -49
 #define Y_MAX_POS 160
 #define Z_MIN_POS 0
 #define Z_MAX_POS 210

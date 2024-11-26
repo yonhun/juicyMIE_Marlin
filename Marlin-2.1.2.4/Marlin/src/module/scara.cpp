@@ -205,8 +205,8 @@ void debug_position() {
     endstops.enable(true);  
 
     // 현재 위치 초기화
-    delta.x = 150;
-    delta.y = 30;
+    delta.a = 150;
+    delta.b = 30;
     SERIAL_ECHOLNPGM("Initial delta (A,B) = ", delta.a, ",", delta.b);
     forward_kinematics(delta.a, delta.b);
     SERIAL_ECHOLNPGM("Initial cartes (X,Y) = ", cartes.x, ",", cartes.y);
@@ -245,6 +245,8 @@ void debug_position() {
     // X축 안전 위치 이동
     SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION X");
 
+    stepper.disable_axis(Y_AXIS); // Y축 스테퍼 모터 비활성화
+
     xy_pos_t safe_position = forward_kinematics_for_home(192, delta.b);
     SERIAL_ECHOLNPGM("delta.a.safeX = ", 192, " delta.b.safeX = ", delta.b);
 
@@ -253,7 +255,7 @@ void debug_position() {
     destination.z = current_position.z;
     SERIAL_ECHOLNPGM("destination (X,Y,Z) = ", destination.x, ",", destination.y, ",", destination.z);
 
-    prepare_line_to_destination();
+    prepare_fast_move_to_destination();
     planner.synchronize();
     sync_plan_position();
 
@@ -261,6 +263,8 @@ void debug_position() {
 
     // Y축 안전 위치 이동
     SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION Y");
+
+    stepper.enable_axis(Y_AXIS); // Y축 스테퍼 모터 활성화
 
     safe_position = forward_kinematics_for_home(delta.a, 100);
     SERIAL_ECHOLNPGM("delta.a.safeY = ", delta.a, " delta.b.safeY = ", delta.b);
@@ -270,7 +274,7 @@ void debug_position() {
     destination.z = current_position.z;
     SERIAL_ECHOLNPGM("destination (X,Y,Z) = ", destination.x, ",", destination.y, ",", destination.z);
 
-    prepare_line_to_destination();
+    prepare_fast_move_to_destination();
     planner.synchronize();
     sync_plan_position();
 
@@ -285,7 +289,7 @@ void debug_position() {
     destination.x = y_home_position.x;  
     destination.y = y_home_position.y;
     destination.z = current_position.z;
-    prepare_line_to_destination();
+    prepare_fast_move_to_destination();
     planner.synchronize();
     
     if (endstops.trigger_state()) {
@@ -306,7 +310,7 @@ void debug_position() {
     destination.y = 0;    
     destination.z = current_position.z;
 
-    prepare_line_to_destination();
+    prepare_fast_move_to_destination();
     planner.synchronize();
     sync_plan_position();
 
