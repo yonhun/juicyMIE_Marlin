@@ -233,7 +233,7 @@ void debug_position() {
 
     if (endstops.trigger_state()) {
       SERIAL_ECHOLNPGM("HIT X ENDSTOP");
-      set_axis_is_at_home(X_AXIS);
+      scara_set_axis_is_at_home(X_AXIS);
       SERIAL_ECHOLNPGM("Current delta.a: ", delta.a, " delta.b: ", delta.b);
       SERIAL_ECHOLNPGM("Current position: ", current_position.x, ",", current_position.y);
       sync_plan_position();
@@ -243,7 +243,7 @@ void debug_position() {
     SERIAL_ECHOLNPGM("HOMING X AXIS COMPLETE");
     
     // X축 안전 위치 이동
-    SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION X");
+    SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION");
 
     stepper.disable_axis(Y_AXIS); // Y축 스테퍼 모터 비활성화
 
@@ -259,29 +259,12 @@ void debug_position() {
     planner.synchronize();
     sync_plan_position();
 
-    SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION X COMPLETE");
-
-    // Y축 안전 위치 이동
-    SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION Y");
-
-    stepper.enable_axis(Y_AXIS); // Y축 스테퍼 모터 활성화
-
-    safe_position = forward_kinematics_for_home(delta.a, 100);
-    SERIAL_ECHOLNPGM("delta.a.safeY = ", delta.a, " delta.b.safeY = ", delta.b);
-
-    destination.x = safe_position.x;  
-    destination.y = safe_position.y;
-    destination.z = current_position.z;
-    SERIAL_ECHOLNPGM("destination (X,Y,Z) = ", destination.x, ",", destination.y, ",", destination.z);
-
-    prepare_fast_move_to_destination();
-    planner.synchronize();
-    sync_plan_position();
-
-    SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION Y COMPLETE");
+    SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION COMPLETE");
 
     // Y축 호밍
     SERIAL_ECHOLNPGM("HOMING Y AXIS");
+
+    stepper.enable_axis(Y_AXIS); // Y축 스테퍼 모터 활성화
 
     xy_pos_t y_home_position = forward_kinematics_for_home(delta.a, 160);
     SERIAL_ECHOLNPGM("delta.a.homeY = ", delta.a, " delta.b.homeY = ", delta.b);
@@ -294,7 +277,7 @@ void debug_position() {
     
     if (endstops.trigger_state()) {
       SERIAL_ECHOLNPGM("HIT Y ENDSTOP");
-      set_axis_is_at_home(Y_AXIS);
+      scara_set_axis_is_at_home(Y_AXIS);
       SERIAL_ECHOLNPGM("Current delta.a: ", delta.a, " delta.b: ", delta.b);
       SERIAL_ECHOLNPGM("Current position: ", current_position.x, ",", current_position.y);
       sync_plan_position();
