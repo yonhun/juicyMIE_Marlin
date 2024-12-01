@@ -337,11 +337,18 @@ void debug_position() {
     current_position.x = cartes.x;
     current_position.y = cartes.y;
   } 
+  // else if (axis == Y_AXIS) {
+  //   // Y축에 대해 처리
+  //   xyz_pos_t homeposition = { X_HOME_POS, Y_HOME_POS, current_position.z };
+  //   inverse_kinematics(homeposition);
+  //   forward_kinematics(delta.a, delta.b);
+  //   current_position.x = cartes.x;
+  //   current_position.y = cartes.y;
+  // }
   else if (axis == Y_AXIS) {
-    // Y축에 대해 처리
-    //xyz_pos_t homeposition = { current_position.x, Y_HOME_POS, current_position.z };
-    xyz_pos_t homeposition = { X_HOME_POS, Y_HOME_POS, current_position.z };
-    inverse_kinematics(homeposition);
+    // Y축에 대해서 처리
+    delta.a = 180;
+    delta.b = 135;
     forward_kinematics(delta.a, delta.b);
     current_position.x = cartes.x;
     current_position.y = cartes.y;

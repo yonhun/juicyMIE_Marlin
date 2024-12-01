@@ -42,14 +42,16 @@ def get_user_input():
     L2 = float(input("Enter the distance L2: "))
     theta1 = float(input("Enter the angle theta1 (in degrees): "))
     theta2 = float(input("Enter the angle theta2 (in degrees): "))
-    offset = float(input("Enter the offset: "))
+    offset = float(input("Enter the offset between two motors: "))
+    offset_x = float(input("Enter the scara offset X: "))
+    offset_y = float(input("Enter the scara offset Y: "))
     
-    return L1, L2, theta1, theta2, offset
+    return L1, L2, theta1, theta2, offset, offset_x, offset_y
 
 # 메인 함수
 def main():
     # 사용자로부터 입력 받기
-    L1, L2, theta1, theta2, offset = get_user_input()
+    L1, L2, theta1, theta2, offset, offset_x, offset_y = get_user_input()
     
     # forward kinematics 계산
     x1, y1, x2, y2, target_x, target_y = forward_kinematics(L1, L2, theta1, theta2, offset)
@@ -58,6 +60,7 @@ def main():
     print(f"Point 1 (x1, y1): ({x1:.2f}, {y1:.2f})")
     print(f"Point 2 (x2, y2): ({x2:.2f}, {y2:.2f})")
     print(f"Target Point (x, y) at distance L2 from both points: ({target_x:.2f}, {target_y:.2f})")
+    print(f"Real Target Point (x, y): ({target_x + offset_x}, {target_y + offset_y}) ")
 
 # 프로그램 실행
 if __name__ == "__main__":
