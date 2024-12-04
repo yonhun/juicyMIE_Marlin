@@ -247,8 +247,8 @@ void debug_position() {
 
     stepper.disable_axis(Y_AXIS); // Y축 스테퍼 모터 비활성화
 
-    xy_pos_t safe_position = forward_kinematics_for_home(192, delta.b);
-    SERIAL_ECHOLNPGM("delta.a.safeX = ", 192, " delta.b.safeX = ", delta.b);
+    xy_pos_t safe_position = forward_kinematics_for_home(192.5, delta.b);
+    SERIAL_ECHOLNPGM("delta.a.safeX = ", 192.5, " delta.b.safeX = ", delta.b);
 
     destination.x = safe_position.x;  
     destination.y = safe_position.y;
@@ -348,7 +348,7 @@ void debug_position() {
   else if (axis == Y_AXIS) {
     // Y축에 대해서 처리
     delta.a = 180;
-    delta.b = 135;
+    delta.b = 132;
     forward_kinematics(delta.a, delta.b);
     current_position.x = cartes.x;
     current_position.y = cartes.y;
