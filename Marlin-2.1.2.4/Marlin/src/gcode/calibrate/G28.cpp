@@ -374,8 +374,8 @@ void GcodeSuite::G28() {
 
     constexpr bool doZ = true;
 
-    home_PARALLEL_SCARA();
-    
+    //home_PARALLEL_SCARA();
+    home_PARALLEL_SCARA2();
   #else
 
     #define _UNSAFE(A) (homeZ && TERN0(Z_SAFE_HOMING, axes_should_home(_BV(A##_AXIS))))
