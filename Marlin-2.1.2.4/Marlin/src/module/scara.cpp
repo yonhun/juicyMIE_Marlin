@@ -207,19 +207,19 @@ void debug_position() {
     // 현재 위치 초기화
     delta.a = 150;
     delta.b = 30;
-    SERIAL_ECHOLNPGM("Initial delta (A,B) = ", delta.a, ",", delta.b);
+    //SERIAL_ECHOLNPGM("Initial delta (A,B) = ", delta.a, ",", delta.b);
     forward_kinematics(delta.a, delta.b);
-    SERIAL_ECHOLNPGM("Initial cartes (X,Y) = ", cartes.x, ",", cartes.y);
+    //SERIAL_ECHOLNPGM("Initial cartes (X,Y) = ", cartes.x, ",", cartes.y);
     current_position.x = cartes.x;
     current_position.y = cartes.y;
     current_position.z = 0;
-    SERIAL_ECHOLNPGM("current position (X,Y,Z) = ", current_position.x, ",", current_position.y, ",", current_position.z);
+    //SERIAL_ECHOLNPGM("current position (X,Y,Z) = ", current_position.x, ",", current_position.y, ",", current_position.z);
     destination.reset();
-    SERIAL_ECHOLNPGM("destination (X,Y,Z) = ", destination.x, ",", destination.y, ",", destination.z);
+    //SERIAL_ECHOLNPGM("destination (X,Y,Z) = ", destination.x, ",", destination.y, ",", destination.z);
     sync_plan_position();   
 
     // X축 호밍 (-270도 = -24000 스텝) - home_PARALLEL_SCARA2 방식
-    SERIAL_ECHOLNPGM("HOMING X AXIS");
+    //SERIAL_ECHOLNPGM("HOMING X AXIS");
 
     int32_t before_x = stepper.position(X_AXIS);
     int32_t before_y = stepper.position(Y_AXIS);
@@ -232,42 +232,42 @@ void debug_position() {
     planner.synchronize();
 
     if (endstops.trigger_state()) {
-      SERIAL_ECHOLNPGM("HIT X ENDSTOP");
+      //SERIAL_ECHOLNPGM("HIT X ENDSTOP");
       scara_set_axis_is_at_home(X_AXIS);
-      SERIAL_ECHOLNPGM("Current delta.a: ", delta.a, " delta.b: ", delta.b);
-      SERIAL_ECHOLNPGM("Current position: ", current_position.x, ",", current_position.y);
+      //SERIAL_ECHOLNPGM("Current delta.a: ", delta.a, " delta.b: ", delta.b);
+      //SERIAL_ECHOLNPGM("Current position: ", current_position.x, ",", current_position.y);
       sync_plan_position();
       endstops.hit_on_purpose();
     }
 
-    SERIAL_ECHOLNPGM("HOMING X AXIS COMPLETE");
+    //SERIAL_ECHOLNPGM("HOMING X AXIS COMPLETE");
     
     // X축 안전 위치 이동
-    SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION");
+    //SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION");
 
     stepper.disable_axis(Y_AXIS); // Y축 스테퍼 모터 비활성화
 
     xy_pos_t safe_position = forward_kinematics_for_home(192.5, delta.b);
-    SERIAL_ECHOLNPGM("delta.a.safeX = ", 192.5, " delta.b.safeX = ", delta.b);
+    //SERIAL_ECHOLNPGM("delta.a.safeX = ", 192.5, " delta.b.safeX = ", delta.b);
 
     destination.x = safe_position.x;  
     destination.y = safe_position.y;
     destination.z = current_position.z;
-    SERIAL_ECHOLNPGM("destination (X,Y,Z) = ", destination.x, ",", destination.y, ",", destination.z);
+    //SERIAL_ECHOLNPGM("destination (X,Y,Z) = ", destination.x, ",", destination.y, ",", destination.z);
 
     prepare_fast_move_to_destination();
     planner.synchronize();
     sync_plan_position();
 
-    SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION COMPLETE");
+    //SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION COMPLETE");
 
     // Y축 호밍
-    SERIAL_ECHOLNPGM("HOMING Y AXIS");
+    //SERIAL_ECHOLNPGM("HOMING Y AXIS");
 
     stepper.enable_axis(Y_AXIS); // Y축 스테퍼 모터 활성화
 
     xy_pos_t y_home_position = forward_kinematics_for_home(delta.a, 160);
-    SERIAL_ECHOLNPGM("delta.a.homeY = ", delta.a, " delta.b.homeY = ", delta.b);
+    //SERIAL_ECHOLNPGM("delta.a.homeY = ", delta.a, " delta.b.homeY = ", delta.b);
 
     destination.x = y_home_position.x;  
     destination.y = y_home_position.y;
@@ -276,18 +276,18 @@ void debug_position() {
     planner.synchronize();
     
     if (endstops.trigger_state()) {
-      SERIAL_ECHOLNPGM("HIT Y ENDSTOP");
+      //SERIAL_ECHOLNPGM("HIT Y ENDSTOP");
       scara_set_axis_is_at_home(Y_AXIS);
-      SERIAL_ECHOLNPGM("Current delta.a: ", delta.a, " delta.b: ", delta.b);
-      SERIAL_ECHOLNPGM("Current position: ", current_position.x, ",", current_position.y);
+      //SERIAL_ECHOLNPGM("Current delta.a: ", delta.a, " delta.b: ", delta.b);
+      //SERIAL_ECHOLNPGM("Current position: ", current_position.x, ",", current_position.y);
       sync_plan_position();
       endstops.hit_on_purpose();
     }
 
-    SERIAL_ECHOLNPGM("HOMING Y AXIS COMPLETE");
+    //SERIAL_ECHOLNPGM("HOMING Y AXIS COMPLETE");
 
     // Z축 호밍
-    SERIAL_ECHOLNPGM("HOMING Z AXIS");
+    //SERIAL_ECHOLNPGM("HOMING Z AXIS");
 
     const feedRate_t home_fr_mm_s = homing_feedrate(Z_AXIS);
     current_position.z = 0;
@@ -297,16 +297,16 @@ void debug_position() {
     planner.synchronize();
 
     if (endstops.trigger_state()) {
-      SERIAL_ECHOLNPGM("HIT Z ENDSTOP");
+      //SERIAL_ECHOLNPGM("HIT Z ENDSTOP");
       scara_set_axis_is_at_home(Z_AXIS);
       sync_plan_position();
       endstops.hit_on_purpose();
     }
 
-    SERIAL_ECHOLNPGM("HOMING Z AXIS COMPLETE");
+    //SERIAL_ECHOLNPGM("HOMING Z AXIS COMPLETE");
 
     // 0,0,0 위치로 이동
-    SERIAL_ECHOLNPGM("MOVE TO 0,0,0");
+    //SERIAL_ECHOLNPGM("MOVE TO 0,0,0");
 
     destination.x = 0;
     destination.y = 0;    
@@ -316,140 +316,14 @@ void debug_position() {
     planner.synchronize();
     sync_plan_position();
 
-    SERIAL_ECHOLNPGM("MOVE TO 0,0,0 COMPLETE");
+    //SERIAL_ECHOLNPGM("MOVE TO 0,0,0 COMPLETE");
 
     // 호밍 완료
     endstops.enable(false);
     sync_plan_position();
 
-    SERIAL_ECHOLNPGM("Final position (X,Y,Z) = ", current_position.x, ",", current_position.y, ",", current_position.z);
-    SERIAL_ECHOLNPGM("PARALLEL_SCARA HOMING COMPLETE");
-  }
-
-  void home_PARALLEL_SCARA2() {
-
-    // 호밍 시작(엔드스톱 활성화)
-    SERIAL_ECHOLNPGM("PARALLEL_SCARA HOMING START");
-    endstops.enable(true);  
-
-    // 현재 위치 초기화
-    delta.a = 150;
-    delta.b = 30;
-    SERIAL_ECHOLNPGM("Initial delta (A,B) = ", delta.a, ",", delta.b);
-    forward_kinematics(delta.a, delta.b);
-    SERIAL_ECHOLNPGM("Initial cartes (X,Y) = ", cartes.x, ",", cartes.y);
-    current_position.x = cartes.x;
-    current_position.y = cartes.y;
-    current_position.z = 0;
-    SERIAL_ECHOLNPGM("current position (X,Y,Z) = ", current_position.x, ",", current_position.y, ",", current_position.z);
-    destination.reset();
-    SERIAL_ECHOLNPGM("destination (X,Y,Z) = ", destination.x, ",", destination.y, ",", destination.z);
-    sync_plan_position();   
-
-    // X축 호밍 (-270도 = -24000 스텝) - home_PARALLEL_SCARA2 방식
-    SERIAL_ECHOLNPGM("HOMING X AXIS");
-
-    xy_pos_t x_home_position = forward_kinematics_for_home(-120, delta.b);
-    SERIAL_ECHOLNPGM("delta.a.homeX = ", delta.a, " delta.b.homeX = ", delta.b);
-
-    destination.x = x_home_position.x;  
-    destination.y = x_home_position.y;
-    destination.z = current_position.z;
-    prepare_fast_move_to_destination();
-    planner.synchronize();
-
-    if (endstops.trigger_state()) {
-      SERIAL_ECHOLNPGM("HIT X ENDSTOP");
-      scara_set_axis_is_at_home(X_AXIS);
-      SERIAL_ECHOLNPGM("Current delta.a: ", delta.a, " delta.b: ", delta.b);
-      SERIAL_ECHOLNPGM("Current position: ", current_position.x, ",", current_position.y);
-      sync_plan_position();
-      endstops.hit_on_purpose();
-    }
-
-    SERIAL_ECHOLNPGM("HOMING X AXIS COMPLETE");
-    
-    // X축 안전 위치 이동
-    SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION");
-
-    stepper.disable_axis(Y_AXIS); // Y축 스테퍼 모터 비활성화
-
-    xy_pos_t safe_position = forward_kinematics_for_home(192.5, delta.b);
-    SERIAL_ECHOLNPGM("delta.a.safeX = ", 192.5, " delta.b.safeX = ", delta.b);
-
-    destination.x = safe_position.x;  
-    destination.y = safe_position.y;
-    destination.z = current_position.z;
-    SERIAL_ECHOLNPGM("destination (X,Y,Z) = ", destination.x, ",", destination.y, ",", destination.z);
-
-    prepare_fast_move_to_destination();
-    planner.synchronize();
-    sync_plan_position();
-
-    SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION COMPLETE");
-
-    // Y축 호밍
-    SERIAL_ECHOLNPGM("HOMING Y AXIS");
-
-    stepper.enable_axis(Y_AXIS); // Y축 스테퍼 모터 활성화
-
-    xy_pos_t y_home_position = forward_kinematics_for_home(delta.a, 160);
-    SERIAL_ECHOLNPGM("delta.a.homeY = ", delta.a, " delta.b.homeY = ", delta.b);
-
-    destination.x = y_home_position.x;  
-    destination.y = y_home_position.y;
-    destination.z = current_position.z;
-    prepare_fast_move_to_destination();
-    planner.synchronize();
-    
-    if (endstops.trigger_state()) {
-      SERIAL_ECHOLNPGM("HIT Y ENDSTOP");
-      scara_set_axis_is_at_home(Y_AXIS);
-      SERIAL_ECHOLNPGM("Current delta.a: ", delta.a, " delta.b: ", delta.b);
-      SERIAL_ECHOLNPGM("Current position: ", current_position.x, ",", current_position.y);
-      sync_plan_position();
-      endstops.hit_on_purpose();
-    }
-
-    SERIAL_ECHOLNPGM("HOMING Y AXIS COMPLETE");
-
-    // Z축 호밍
-    SERIAL_ECHOLNPGM("HOMING Z AXIS");
-
-    current_position.z = 0;
-    sync_plan_position();
-    destination.z = 200;
-    prepare_fast_move_to_destination();
-    planner.synchronize();
-
-    if (endstops.trigger_state()) {
-      SERIAL_ECHOLNPGM("HIT Z ENDSTOP");
-      scara_set_axis_is_at_home(Z_AXIS);
-      sync_plan_position();
-      endstops.hit_on_purpose();
-    }
-
-    SERIAL_ECHOLNPGM("HOMING Z AXIS COMPLETE");
-
-    // 0,0,0 위치로 이동
-    SERIAL_ECHOLNPGM("MOVE TO 0,0,0");
-
-    destination.x = 0;
-    destination.y = 0;    
-    destination.z = 0;
-
-    prepare_fast_move_to_destination();
-    planner.synchronize();
-    sync_plan_position();
-
-    SERIAL_ECHOLNPGM("MOVE TO 0,0,0 COMPLETE");
-
-    // 호밍 완료
-    endstops.enable(false);
-    sync_plan_position();
-
-    SERIAL_ECHOLNPGM("Final position (X,Y,Z) = ", current_position.x, ",", current_position.y, ",", current_position.z);
-    SERIAL_ECHOLNPGM("PARALLEL_SCARA HOMING COMPLETE");
+    //SERIAL_ECHOLNPGM("Final position (X,Y,Z) = ", current_position.x, ",", current_position.y, ",", current_position.z);
+    //SERIAL_ECHOLNPGM("PARALLEL_SCARA HOMING COMPLETE");
   }
 
   void scara_set_axis_is_at_home(const AxisEnum axis) {
