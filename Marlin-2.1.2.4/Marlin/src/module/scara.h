@@ -38,6 +38,18 @@ extern float segments_per_second;
   void forward_kinematics(const_float_t a, const_float_t b, const_float_t c);
   void home_TPARA();
 
+#elif ENABLED(PARALLEL_SCARA)
+
+  float constexpr L1 = SCARA_LINKAGE_1, L2 = SCARA_LINKAGE_2,   // Float constants for SCARA calculations
+                  L1_2 = sq(float(L1)), L1_2_2 = 2.0 * L1_2,
+                  L2_2 = sq(float(L2));
+
+  void home_PARALLEL_SCARA();
+  void home_PARALLEL_SCARA2();
+  void forward_kinematics(const_float_t a, const_float_t b);
+  xy_pos_t forward_kinematics_for_home(const_float_t a, const_float_t b);
+  xy_pos_t inverse_kinematics_for_home(const xyz_pos_t &raw);
+
 #else
 
   float constexpr L1 = SCARA_LINKAGE_1, L2 = SCARA_LINKAGE_2,   // Float constants for SCARA calculations

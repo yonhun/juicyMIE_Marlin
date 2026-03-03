@@ -373,10 +373,8 @@ void GcodeSuite::G28() {
   #elif ENABLED(PARALLEL_SCARA)
 
     constexpr bool doZ = true;
-    
-    homeaxis(X_AXIS);
-    homeaxis(Y_AXIS);
-    homeaxis(Z_AXIS);
+
+    home_PARALLEL_SCARA();
     
   #else
 

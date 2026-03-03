@@ -112,7 +112,8 @@
  *
  * :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000]
  */
-#define BAUDRATE 115200
+#define BAUDRATE 250000   
+//115200
 
 //#define BAUD_RATE_GCODE     // Enable G-code M575 to set the baud rate
 
@@ -1002,8 +1003,8 @@
 
   // SCARA tower offset (position of Tower relative to bed zero position)
   // This needs to be reasonably accurate as it defines the printbed position in the SCARA space.
-  #define SCARA_OFFSET_X  38.2       // (mm) // PARALLEL_SCARA에서는 모터 1(좌측 모터)의 X 오프셋(기준은 프린트베드의 위치)
-  #define SCARA_OFFSET_Y  -48.45       // (mm) // PARALLEL_SCARA에서는 모터 1(좌측 모터)의 Y 오프셋(기준은 프린트베드의 위치)
+  #define SCARA_OFFSET_X  38        // (mm) // PARALLEL_SCARA에서는 모터 1(좌측 모터)의 X 오프셋(기준은 프린트베드의 위치)
+  #define SCARA_OFFSET_Y  -48.45    // (mm) // PARALLEL_SCARA에서는 모터 1(좌측 모터)의 Y 오프셋(기준은 프린트베드의 위치)
 
   #if ENABLED(MORGAN_SCARA)
 
@@ -1079,7 +1080,7 @@
 // extra connectors. Leave undefined any used for non-endstop and non-probe purposes.
 #define USE_XMIN_PLUG // 모터1은 각도가 최소일 때 엔드스탑 스위치 contact
 //#define USE_YMIN_PLUG
-#define USE_ZMIN_PLUG // Z-axis 모터는 최소일 때 엔드스탑 스위치 contact
+//#define USE_ZMIN_PLUG 
 //#define USE_IMIN_PLUG
 //#define USE_JMIN_PLUG
 //#define USE_KMIN_PLUG
@@ -1088,7 +1089,7 @@
 //#define USE_WMIN_PLUG
 //#define USE_XMAX_PLUG
 #define USE_YMAX_PLUG // 모터2는 각도가 최대일 때 엔드스탑 스위치 contact
-//#define USE_ZMAX_PLUG
+#define USE_ZMAX_PLUG // Z-axis 모터는 최대일 때 엔드스탑 스위치 contact
 //#define USE_IMAX_PLUG
 //#define USE_JMAX_PLUG
 //#define USE_KMAX_PLUG
@@ -1149,7 +1150,7 @@
 // Mechanical endstop with COM to ground and NC to Signal uses "false" here (most common setup).
 #define X_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
 #define Y_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
-#define Z_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+#define Z_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define I_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define J_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define K_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
@@ -1158,7 +1159,7 @@
 #define W_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define X_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define Y_MAX_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
-#define Z_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+#define Z_MAX_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
 #define I_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define J_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define K_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
@@ -1213,14 +1214,14 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 800/9, 800/9, 400, 300 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 800/9, 800/9, 400, 92.6 }
 
 /**
  * Default Max Feed Rate (linear=mm/s, rotational=°/s)
  * Override with M203
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
+#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 100 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -1730,7 +1731,7 @@
 // :[-1,1]
 #define X_HOME_DIR -1
 #define Y_HOME_DIR 1
-#define Z_HOME_DIR -1
+#define Z_HOME_DIR 1
 //#define I_HOME_DIR -1
 //#define J_HOME_DIR -1
 //#define K_HOME_DIR -1
@@ -1741,16 +1742,16 @@
 // @section geometry
 
 // The size of the printable area
-#define X_BED_SIZE 150
-#define Y_BED_SIZE 150
+#define X_BED_SIZE 130
+#define Y_BED_SIZE 130
 
 // Travel limits (linear=mm, rotational=°) after homing, corresponding to endstop positions.
-#define X_MIN_POS -80
-#define X_MAX_POS 200
-#define Y_MIN_POS -10
-#define Y_MAX_POS 170
+#define X_MIN_POS -90
+#define X_MAX_POS 210
+#define Y_MIN_POS -49
+#define Y_MAX_POS 160
 #define Z_MIN_POS 0
-#define Z_MAX_POS 210
+#define Z_MAX_POS 152.2
 //#define I_MIN_POS 0
 //#define I_MAX_POS 50
 //#define J_MIN_POS 0
@@ -2120,9 +2121,9 @@
 
 // Manually set the home position. Leave these undefined for automatic settings.
 // For DELTA this is the top-center of the Cartesian print volume.
-#define MANUAL_X_HOME_POS -83.04 
-#define MANUAL_Y_HOME_POS 60.15
-#define MANUAL_Z_HOME_POS 0.5
+#define MANUAL_X_HOME_POS -85.618 
+#define MANUAL_Y_HOME_POS 59.433
+#define MANUAL_Z_HOME_POS 152.2
 //#define MANUAL_I_HOME_POS 0
 //#define MANUAL_J_HOME_POS 0
 //#define MANUAL_K_HOME_POS 0

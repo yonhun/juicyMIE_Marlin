@@ -944,9 +944,19 @@ void restore_feedrate_and_scaling() {
         LIMIT(target.y, draw_area_min.y, draw_area_max.y);
       #else
         if (TERN1(IS_SCARA, axis_was_homed(X_AXIS) && axis_was_homed(Y_AXIS))) {
-          const float dist_2 = HYPOT2(target.x - offs.x, target.y - offs.y);
-          if (dist_2 > delta_max_radius_2)
-            target *= float(delta_max_radius / SQRT(dist_2)); // 200 / 300 = 0.66
+          #if ENABLED(PARALLEL_SCARA)
+            // Parallel SCARA has no workspace radius limit
+            const float dist_2_1 = HYPOT2(target.x - offs.x, target.y - offs.y);
+            const float dist_2_2 = HYPOT2(target.a - offs.x - SCARA_OFFSET_C, target.b - offs.y);
+            if (dist_2_1 > delta_max_radius_2)
+              target *= float(delta_max_radius / SQRT(dist_2_1)); // 200 / 300 = 0.66
+            else if (dist_2_2 > delta_max_radius_2)
+              target *= float(delta_max_radius / SQRT(dist_2_2)); // 200 / 300 = 0.66
+          #else
+            const float dist_2 = HYPOT2(target.x - offs.x, target.y - offs.y);
+            if (dist_2 > delta_max_radius_2)
+              target *= float(delta_max_radius / SQRT(dist_2)); // 200 / 300 = 0.66
+          #endif
         }
       #endif
 
@@ -1964,19 +1974,9 @@ void prepare_line_to_destination() {
 
   void homeaxis(const AxisEnum axis) {
 
-    #if ANY(MORGAN_SCARA, MP_SCARA)
+    #if ANY(MORGAN_SCARA, MP_SCARA, PARALLEL_SCARA)
       // Only Z homing (with probe) is permitted
       if (axis != Z_AXIS) { BUZZ(100, 880); return; }
-    #elif ENABLED(PARALLEL_SCARA)
-      if (axis == X_AXIS || axis == Y_AXIS || axis == Z_AXIS) {
-        set_axis_is_at_home(axis);
-        sync_plan_position();
-        return;
-      }
-      else  {
-        BUZZ(100, 880);
-        return;
-      }
     #else
       #define _CAN_HOME(A) (axis == _AXIS(A) && ( \
            ENABLED(A##_SPI_SENSORLESS) \

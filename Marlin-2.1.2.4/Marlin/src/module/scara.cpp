@@ -32,12 +32,28 @@
 #include "motion.h"
 #include "planner.h"
 
-#if ENABLED(AXEL_TPARA)
+#if ANY(PARALLEL_SCARA, AXEL_TPARA)
   #include "endstops.h"
   #include "../MarlinCore.h"
+  #include "stepper.h"
 #endif
 
 float segments_per_second = DEFAULT_SEGMENTS_PER_SECOND;
+
+// 현재 시간을 저장할 변수
+static millis_t next_debug_ms = 0;
+
+// 디버그 함수
+void debug_position() {
+  const millis_t ms = millis();
+  
+  // 1초(1000ms)마다 실행
+  if (ELAPSED(ms, next_debug_ms)) {
+    SERIAL_ECHOLNPGM("Current X steps: ", stepper.position(X_AXIS));
+    SERIAL_ECHOLNPGM("Current Y steps: ", stepper.position(Y_AXIS));
+    next_debug_ms = ms + 1000; // 다음 실행 시간 설정
+  }
+}
 
 #if ANY(MORGAN_SCARA, MP_SCARA)
 
@@ -71,6 +87,8 @@ float segments_per_second = DEFAULT_SEGMENTS_PER_SECOND;
   }
 
 #endif
+
+
 
 #if ENABLED(MORGAN_SCARA)
 
@@ -180,22 +198,159 @@ float segments_per_second = DEFAULT_SEGMENTS_PER_SECOND;
   static constexpr xy_pos_t scara_offset = { SCARA_OFFSET_X, SCARA_OFFSET_Y };
   static constexpr float SCARA_OFFSET = SCARA_OFFSET_C;  // 두 암 사이의 오프셋
 
+  void home_PARALLEL_SCARA() {
+
+    // 호밍 시작(엔드스톱 활성화)
+    SERIAL_ECHOLNPGM("PARALLEL_SCARA HOMING START");
+    endstops.enable(true);  
+
+    // 현재 위치 초기화
+    delta.a = 150;
+    delta.b = 30;
+    //SERIAL_ECHOLNPGM("Initial delta (A,B) = ", delta.a, ",", delta.b);
+    forward_kinematics(delta.a, delta.b);
+    //SERIAL_ECHOLNPGM("Initial cartes (X,Y) = ", cartes.x, ",", cartes.y);
+    current_position.x = cartes.x;
+    current_position.y = cartes.y;
+    current_position.z = 0;
+    //SERIAL_ECHOLNPGM("current position (X,Y,Z) = ", current_position.x, ",", current_position.y, ",", current_position.z);
+    destination.reset();
+    //SERIAL_ECHOLNPGM("destination (X,Y,Z) = ", destination.x, ",", destination.y, ",", destination.z);
+    sync_plan_position();   
+
+    // X축 호밍 (-270도 = -24000 스텝) - home_PARALLEL_SCARA2 방식
+    //SERIAL_ECHOLNPGM("HOMING X AXIS");
+
+    int32_t before_x = stepper.position(X_AXIS);
+    int32_t before_y = stepper.position(Y_AXIS);
+    
+    xyze_long_t target = { before_x - 24000, before_y, 0, 0 };
+    xyze_pos_t target_float = { 0, 0, 0, 0 };
+
+    planner._buffer_steps(target, target_float,
+                         feedRate_t(30), 0, PlannerHints());
+    planner.synchronize();
+
+    if (endstops.trigger_state()) {
+      //SERIAL_ECHOLNPGM("HIT X ENDSTOP");
+      scara_set_axis_is_at_home(X_AXIS);
+      //SERIAL_ECHOLNPGM("Current delta.a: ", delta.a, " delta.b: ", delta.b);
+      //SERIAL_ECHOLNPGM("Current position: ", current_position.x, ",", current_position.y);
+      sync_plan_position();
+      endstops.hit_on_purpose();
+    }
+
+    //SERIAL_ECHOLNPGM("HOMING X AXIS COMPLETE");
+    
+    // X축 안전 위치 이동
+    //SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION");
+
+    stepper.disable_axis(Y_AXIS); // Y축 스테퍼 모터 비활성화
+
+    xy_pos_t safe_position = forward_kinematics_for_home(192.5, delta.b);
+    //SERIAL_ECHOLNPGM("delta.a.safeX = ", 192.5, " delta.b.safeX = ", delta.b);
+
+    destination.x = safe_position.x;  
+    destination.y = safe_position.y;
+    destination.z = current_position.z;
+    //SERIAL_ECHOLNPGM("destination (X,Y,Z) = ", destination.x, ",", destination.y, ",", destination.z);
+
+    prepare_fast_move_to_destination();
+    planner.synchronize();
+    sync_plan_position();
+
+    //SERIAL_ECHOLNPGM("MOVE TO SAFE POSITION COMPLETE");
+
+    // Y축 호밍
+    //SERIAL_ECHOLNPGM("HOMING Y AXIS");
+
+    stepper.enable_axis(Y_AXIS); // Y축 스테퍼 모터 활성화
+
+    xy_pos_t y_home_position = forward_kinematics_for_home(delta.a, 160);
+    //SERIAL_ECHOLNPGM("delta.a.homeY = ", delta.a, " delta.b.homeY = ", delta.b);
+
+    destination.x = y_home_position.x;  
+    destination.y = y_home_position.y;
+    destination.z = current_position.z;
+    prepare_fast_move_to_destination();
+    planner.synchronize();
+    
+    if (endstops.trigger_state()) {
+      //SERIAL_ECHOLNPGM("HIT Y ENDSTOP");
+      scara_set_axis_is_at_home(Y_AXIS);
+      //SERIAL_ECHOLNPGM("Current delta.a: ", delta.a, " delta.b: ", delta.b);
+      //SERIAL_ECHOLNPGM("Current position: ", current_position.x, ",", current_position.y);
+      sync_plan_position();
+      endstops.hit_on_purpose();
+    }
+
+    //SERIAL_ECHOLNPGM("HOMING Y AXIS COMPLETE");
+
+    // Z축 호밍
+    //SERIAL_ECHOLNPGM("HOMING Z AXIS");
+
+    const feedRate_t home_fr_mm_s = homing_feedrate(Z_AXIS);
+    current_position.z = 0;
+    sync_plan_position();
+    current_position.z = 24000;
+    line_to_current_position(home_fr_mm_s);
+    planner.synchronize();
+
+    if (endstops.trigger_state()) {
+      //SERIAL_ECHOLNPGM("HIT Z ENDSTOP");
+      scara_set_axis_is_at_home(Z_AXIS);
+      sync_plan_position();
+      endstops.hit_on_purpose();
+    }
+
+    //SERIAL_ECHOLNPGM("HOMING Z AXIS COMPLETE");
+
+    // 0,0,0 위치로 이동
+    //SERIAL_ECHOLNPGM("MOVE TO 0,0,0");
+
+    destination.x = 0;
+    destination.y = 0;    
+    destination.z = 0;
+
+    prepare_fast_move_to_destination();
+    planner.synchronize();
+    sync_plan_position();
+
+    //SERIAL_ECHOLNPGM("MOVE TO 0,0,0 COMPLETE");
+
+    // 호밍 완료
+    endstops.enable(false);
+    sync_plan_position();
+
+    //SERIAL_ECHOLNPGM("Final position (X,Y,Z) = ", current_position.x, ",", current_position.y, ",", current_position.z);
+    //SERIAL_ECHOLNPGM("PARALLEL_SCARA HOMING COMPLETE");
+  }
+
   void scara_set_axis_is_at_home(const AxisEnum axis) {
   if (axis == Z_AXIS) {
     current_position.z = Z_HOME_POS; // Z축 호밍
   } 
   else if (axis == X_AXIS) {
     // X축에 대해 처리
-    xyz_pos_t homeposition = { X_HOME_POS, current_position.y, current_position.z };
-    inverse_kinematics(homeposition);
+    delta.x = 45;
     forward_kinematics(delta.a, delta.b);
     current_position.x = cartes.x;
+    current_position.y = cartes.y;
   } 
+  // else if (axis == Y_AXIS) {
+  //   // Y축에 대해 처리
+  //   xyz_pos_t homeposition = { X_HOME_POS, Y_HOME_POS, current_position.z };
+  //   inverse_kinematics(homeposition);
+  //   forward_kinematics(delta.a, delta.b);
+  //   current_position.x = cartes.x;
+  //   current_position.y = cartes.y;
+  // }
   else if (axis == Y_AXIS) {
-    // Y축에 대해 처리
-    xyz_pos_t homeposition = { current_position.x, Y_HOME_POS, current_position.z };
-    inverse_kinematics(homeposition);
+    // Y축에 대해서 처리
+    delta.a = 180;
+    delta.b = 132;
     forward_kinematics(delta.a, delta.b);
+    current_position.x = cartes.x;
     current_position.y = cartes.y;
   }
 
@@ -240,6 +395,45 @@ float segments_per_second = DEFAULT_SEGMENTS_PER_SECOND;
     cartes.y = mid_y + h * ny + scara_offset.y;
   }
 
+  // PARALLEL_SCARA Forward Kinematics for home
+  xy_pos_t forward_kinematics_for_home(const_float_t a, const_float_t b) {
+    xy_pos_t real_position;
+    const float a_rad = RADIANS(a);
+    const float b_rad = RADIANS(b);
+
+    // 두 점의 좌표 계산
+    float x1 = SCARA_LINKAGE_1 * cos(a_rad);
+    float y1 = SCARA_LINKAGE_1 * sin(a_rad);
+    float x2 = SCARA_LINKAGE_1 * cos(b_rad) + SCARA_OFFSET;
+    float y2 = SCARA_LINKAGE_1 * sin(b_rad);
+
+    // 중점 계산
+    float mid_x = (x1 + x2) / 2;
+    float mid_y = (y1 + y2) / 2;
+
+    // 두 점 사이의 거리
+    float d = HYPOT(x2 - x1, y2 - y1);
+
+    // 중점에서 목표 점까지의 거리
+    float h = SQRT(sq(SCARA_LINKAGE_2) - sq(d / 2));
+
+    // 수직 단위 벡터 계산
+    float nx, ny;
+    if (d != 0) {
+      nx = (y1 - y2) / d;
+      ny = (x2 - x1) / d;
+    } else {
+      nx = 0;
+      ny = 1;
+    }
+
+    // 최종 목표 점 계산
+    real_position.x = mid_x + h * nx + scara_offset.x;
+    real_position.y = mid_y + h * ny + scara_offset.y;
+
+    return real_position;
+  }
+
   // PARALLEL_SCARA Inverse Kinematics
   void inverse_kinematics(const xyz_pos_t &raw) {
     const xy_pos_t spos = raw - scara_offset;
@@ -259,6 +453,31 @@ float segments_per_second = DEFAULT_SEGMENTS_PER_SECOND;
     float theta_b = DEGREES(PI - gamma_1 - delta_1);
 
     delta.set(theta_a, theta_b, raw.z);
+  }
+
+  // PARALLEL_SCARA Inverse Kinematics for home
+  xy_pos_t inverse_kinematics_for_home(const xyz_pos_t &raw) {
+    xy_pos_t real_delta;
+    const xy_pos_t spos = raw - scara_offset;
+    float target_x = spos.x;
+    float target_y = spos.y;
+
+    float a = HYPOT(target_x, target_y);
+    float b = HYPOT(target_x - SCARA_OFFSET, target_y);
+
+    float alpha_1 = ACOS((sq(a) + sq(SCARA_OFFSET) - sq(b)) / (2 * a * SCARA_OFFSET));
+    float gamma_1 = ACOS((sq(b) + sq(SCARA_OFFSET) - sq(a)) / (2 * b * SCARA_OFFSET));
+
+    float beta_1 = ACOS((sq(SCARA_LINKAGE_1) + sq(a) - sq(SCARA_LINKAGE_2)) / (2 * SCARA_LINKAGE_1 * a));
+    float delta_1 = ACOS((sq(SCARA_LINKAGE_1) + sq(b) - sq(SCARA_LINKAGE_2)) / (2 * SCARA_LINKAGE_1 * b));
+
+    float theta_a = DEGREES(alpha_1 + beta_1);
+    float theta_b = DEGREES(PI - gamma_1 - delta_1);
+
+    real_delta.x = theta_a;
+    real_delta.y = theta_b;
+
+    return real_delta;
   }
 
 #elif ENABLED(AXEL_TPARA)
